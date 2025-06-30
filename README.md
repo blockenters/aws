@@ -10,11 +10,11 @@
 
 AWS 회원가입 : 모바일에서 회원가입을 진행하세요.
 
-IAM Identity Center 사용자 생성
-
 ec2 생성하기
 
 ec2에 접속하기 : https://docs.aws.amazon.com/ko_kr/AWSEC2/latest/UserGuide/connection-prereqs-general.html
+
+IAM Identity Center 사용자 생성
 
 로컬 컴퓨터에 실습환경 설정 : 자바, 파이썬(미니콘다), Git, Github.com, IntelliJ, Visual Studio Code 
 
