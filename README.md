@@ -14,11 +14,29 @@ ec2 생성하기
 
 ec2에 접속하기 : https://docs.aws.amazon.com/ko_kr/AWSEC2/latest/UserGuide/connection-prereqs-general.html
 
-IAM Identity Center 사용자 생성
-
 로컬 컴퓨터에 실습환경 설정 : 자바, 파이썬(미니콘다), Git, Github.com, IntelliJ, Visual Studio Code 
 
 실습용 더미서버 제공 사이트 : https://server.prag-ai.com
+
+---
+
+IAM Identity Center 사용자 생성
+
+기존 EC2 종료 후, RDS MySQL 셋팅 : https://docs.google.com/presentation/d/12Xm89yzn-Lk6eacTjSn59hXrB28Ip4waDyPfe29jXDE/edit?usp=sharing
+
+터널링 하기 : $ ssh -i <YOUR_PRIVATE_KEY_FILE.pem> -N -L 3307:<RDS_ENDPOINT>:3306 ec2-user@<EC2_PUBLIC_IP>
+
+DBeaver 설치 및 접속 설정 
+
+데이터베이스 유저 생성 : 유저 만드는 쿼리문.sql
+
+MySQL에 실습용 테이블과 데이터 생성 : 실습 파일안에 sql파일이 있음
+
+실습 서버의 접속정보 셋팅 
+
+
+
+
 
 
 
