@@ -26,13 +26,15 @@ IAM Identity Center 사용자 생성
 
 터널링 하기 : $ ssh -i <YOUR_PRIVATE_KEY_FILE.pem> -N -L 3307:<RDS_ENDPOINT>:3306 ec2-user@<EC2_PUBLIC_IP>
 
-DBeaver 설치 및 접속 설정 
+DBeaver 설치 및 접속 설정
 
 데이터베이스 유저 생성 : 유저 만드는 쿼리문.sql
 
 MySQL에 실습용 테이블과 데이터 생성 : 실습 파일안에 sql파일이 있음
 
-실습 서버의 접속정보 셋팅 
+실습 서버의 접속정보 셋팅 후 배포하기
+
+직접 실습 : https://docs.google.com/presentation/d/13fGRVX9Xe_WLsk383ziS7Frf93fhyAvscHkP2FlE87s/edit?usp=sharing
 
 
 
