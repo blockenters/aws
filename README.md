@@ -46,7 +46,9 @@ S3 버킷 생성하고 파일 업로드 해보기
 
 실습 서버의 설정파일 셋팅 및 실행
 
-Restful API랑?
+Restful API랑? : https://docs.google.com/presentation/d/1tuZvlY2PcnQw7K6u5K92FWZ5KggVbGzewf9xlaZ_uzo/edit?usp=sharing
+
+Postman 설치
 
 Restful API 의 JWT 기반 인증
 
