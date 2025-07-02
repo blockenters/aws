@@ -54,4 +54,6 @@ Restful API 의 JWT 기반 인증
 
 2-Tier VPC 구축
 
+실습 : https://docs.google.com/presentation/d/1HpPvqpjlWIIg3sK4alHSHDvzHAJBaKNBfNS9L5cf4YM/edit?usp=sharing
+
 
