@@ -46,10 +46,10 @@ S3 버킷 생성하고 파일 업로드 해보기
 
 실습 서버의 설정파일 셋팅 및 실행
 
+Restful API랑?
+
+Restful API 의 JWT 기반 인증
+
 2-Tier VPC 구축
-
-
-
-
 
 
