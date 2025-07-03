@@ -50,6 +50,8 @@ Restful API랑? : https://docs.google.com/presentation/d/1tuZvlY2PcnQw7K6u5K92FW
 
 Postman 설치
 
+실습서버의 API 명세서 : https://juniper-snout-930.notion.site/API-1694a24679c0807fb36bcf5f92e2d3b5
+
 Restful API 의 JWT 기반 인증
 
 실습 : https://docs.google.com/presentation/d/1HpPvqpjlWIIg3sK4alHSHDvzHAJBaKNBfNS9L5cf4YM/edit?usp=sharing
