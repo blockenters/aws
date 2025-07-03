@@ -58,11 +58,15 @@ Restful API 의 JWT 기반 인증
 
 ---
 
+깃허브를 이용한 CI 구축
+
+ec2에 자동 배포
+
+람다에 자동 배포 
+
 AWS의 보안 : https://docs.google.com/presentation/d/1-QH-_Em43W5NBJPvEBmPoHp3r-dJz5e3dEtNOWHGRTs/edit?usp=sharing
 
-2-Tier VPC 구축
 
-깃허브를 이용한 CI 구축
 
 
 
