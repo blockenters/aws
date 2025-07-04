@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>자산 관리 대시보드</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f5f6fa;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #222;
+    }
+    .header {
+      background: #0984e3;
+      color: #fff;
+      padding: 18px 32px;
+      font-size: 22px;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header .user-info {
+      font-size: 15px;
+      margin-right: 20px;
+    }
+    .header button {
+      background: #fff;
+      color: #0984e3;
+      border: none;
+      border-radius: 4px;
+      padding: 7px 18px;
+      font-size: 15px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    .main {
+      display: flex;
+      max-width: 1100px;
+      margin: 40px auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      min-height: 600px;
+    }
+    .sidebar {
+      width: 240px;
+      border-right: 1px solid #e0e0e0;
+      padding: 28px 18px 18px 18px;
+      background: #f8fafd;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .sidebar h3 {
+      font-size: 16px;
+      margin: 0 0 10px 0;
+      color: #636e72;
+    }
+    .folder-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      font-size: 15px;
+    }
+    .folder-list li {
+      padding: 7px 0 7px 10px;
+      cursor: pointer;
+      border-radius: 3px;
+      color: #636e72;
+      transition: background .15s;
+    }
+    .folder-list li.selected, .folder-list li:hover {
+      background: #dff9fb;
+      color: #0984e3;
+    }
+    .folder-create-form {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .folder-create-form input {
+      flex: 1;
+      padding: 6px 7px;
+      border: 1px solid #dfe6e9;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .folder-create-form button {
+      padding: 6px 12px;
+      background: #0984e3;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .content {
+      flex: 1;
+      padding: 36px 36px 36px 36px;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+    .asset-filter-form {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .asset-filter-form input,
+    .asset-filter-form select {
+      padding: 7px 8px;
+      border: 1px solid #dfe6e9;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .asset-filter-form button {
+      background: #0984e3;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 16px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .asset-list {
+      margin-top: 10px;
+      background: #f8fafd;
+      border-radius: 8px;
+      padding: 16px;
+      min-height: 200px;
+      max-height: 340px;
+      overflow-y: auto;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .asset-item {
+      border-bottom: 1px solid #eaeaea;
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 15px;
+    }
+    .asset-item:last-child {
+      border-bottom: none;
+    }
+    .asset-item .tags {
+      margin-top: 2px;
+    }
+    .tag {
+      display: inline-block;
+      background: #dff9fb;
+      color: #0984e3;
+      border-radius: 3px;
+      padding: 2px 7px;
+      font-size: 12px;
+      margin-right: 4px;
+    }
+    .msg {
+      color: #d63031;
+      font-size: 14px;
+      margin: 7px 0 0 0;
+    }
+    .msg.success {
+      color: #00b894;
+      font-weight: bold;
+    }
+    /* 로그인/회원가입 */
+    .auth-container {
+      max-width: 340px;
+      margin: 80px auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 38px 32px 32px 32px;
+    }
+    .auth-tabs {
+      display: flex;
+      margin-bottom: 24px;
+    }
+    .auth-tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px;
+      cursor: pointer;
+      background: #f1f2f6;
+      font-weight: bold;
+      color: #636e72;
+      border-radius: 8px 8px 0 0;
+      transition: background .2s;
+    }
+    .auth-tab.active {
+      background: #0984e3;
+      color: #fff;
+    }
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .auth-form input {
+      padding: 10px;
+      border: 1px solid #dfe6e9;
+      border-radius: 4px;
+      font-size: 15px;
+    }
+    .auth-form button {
+      background: #0984e3;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .auth-form button:hover {
+      background: #74b9ff;
+    }
+
+    /* --- 트렌디 자산 업로드 스타일 --- */
+    .trendy-upload .upload-card {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      background: #f9fbfd;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(9,132,227,0.07);
+      padding: 28px 28px 20px 28px;
+      max-width: 600px;
+      margin: 0 auto 0 auto;
+      border: 1px solid #e6ecf3;
+    }
+    .trendy-upload .upload-fields {
+      display: flex;
+      gap: 26px;
+      align-items: flex-start;
+    }
+    .trendy-upload .upload-thumb {
+      width: 92px;
+      height: 92px;
+      border: 2px dashed #dfe6e9;
+      border-radius: 12px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color .2s;
+    }
+    .trendy-upload .upload-thumb:hover {
+      border-color: #0984e3;
+    }
+    .trendy-upload .upload-thumb span {
+      font-size: 36px;
+      color: #b2bec3;
+      pointer-events: none;
+    }
+    .trendy-upload .upload-thumb img {
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+    }
+    .trendy-upload .upload-thumb input[type="file"] {
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      left:0; top:0;
+      cursor: pointer;
+    }
+    .trendy-upload .upload-inputs {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .trendy-upload .input-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .trendy-upload .input-row label {
+      width: 70px;
+      color: #636e72;
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .trendy-upload .input-row input,
+    .trendy-upload .input-row textarea,
+    .trendy-upload .input-row select {
+      flex: 1;
+      padding: 9px 10px;
+      border: 1px solid #dfe6e9;
+      border-radius: 5px;
+      font-size: 15px;
+      background: #fff;
+    }
+    .trendy-upload .input-row textarea {
+      resize: vertical;
+      min-height: 32px;
+      max-height: 60px;
+    }
+    .trendy-upload .upload-btn {
+      margin-top: 8px;
+      background: linear-gradient(90deg,#0984e3 60%,#74b9ff 100%);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      padding: 12px 0;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(9,132,227,0.08);
+      letter-spacing: 1px;
+      transition: background .18s;
+    }
+    .trendy-upload .upload-btn:hover {
+      background: linear-gradient(90deg,#74b9ff 0%,#0984e3 100%);
+    }
+    @media (max-width: 700px) {
+      .main { flex-direction: column; }
+      .sidebar { width: 100%; border-right: none; border-bottom: 1px solid #e0e0e0; }
+      .content { padding: 18px 8px; }
+      .trendy-upload .upload-card { padding: 18px 8px 14px 8px; }
+      .trendy-upload .upload-fields { flex-direction: column; gap: 12px; align-items: stretch;}
+      .trendy-upload .upload-thumb { margin: 0 auto; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 로그인/회원가입 화면 -->
+  <div id="authSection" style="display:block;">
+    <div class="auth-container">
+      <div class="auth-tabs">
+        <div class="auth-tab active" data-tab="login">로그인</div>
+        <div class="auth-tab" data-tab="register">회원가입</div>
+      </div>
+      <form class="auth-form" id="loginForm" style="display:block;">
+        <input type="email" id="loginEmail" placeholder="이메일" required>
+        <input type="password" id="loginPassword" placeholder="비밀번호" required>
+        <button type="submit">로그인</button>
+        <div class="msg" id="loginMsg"></div>
+      </form>
+      <form class="auth-form" id="registerForm" style="display:none;">
+        <input type="text" id="registerName" placeholder="이름" required>
+        <input type="email" id="registerEmail" placeholder="이메일" required>
+        <input type="password" id="registerPassword" placeholder="비밀번호" required>
+        <button type="submit">회원가입</button>
+        <div class="msg" id="registerMsg"></div>
+      </form>
+    </div>
+  </div>
+  <!-- 대시보드 화면 -->
+  <div id="dashboardSection" style="display:none;">
+    <div class="header">
+      <span>자산 관리 대시보드</span>
+      <div>
+        <span class="user-info" id="userInfo"></span>
+        <button id="logoutBtn">로그아웃</button>
+      </div>
+    </div>
+    <div class="main">
+      <aside class="sidebar">
+        <div>
+          <h3>폴더</h3>
+          <ul class="folder-list" id="folderList"></ul>
+          <form class="folder-create-form" id="folderCreateForm">
+            <input type="text" id="folderName" placeholder="새 폴더명" required>
+            <button type="submit">+</button>
+          </form>
+          <div class="msg" id="folderMsg"></div>
+        </div>
+      </aside>
+      <section class="content">
+        <form class="asset-filter-form" id="assetFilterForm">
+          <input type="text" id="filterTag" placeholder="태그로 검색">
+          <select id="filterFolder">
+            <option value="">전체 폴더</option>
+          </select>
+          <button type="submit">검색</button>
+        </form>
+        <div class="asset-list" id="assetList"></div>
+        <!-- 트렌디 자산 업로드 영역 -->
+        <form class="asset-upload-form trendy-upload" id="assetUploadForm" enctype="multipart/form-data">
+          <div class="upload-card">
+            <div class="upload-fields">
+              <div class="upload-thumb" id="uploadThumb">
+                <span>+</span>
+                <input type="file" id="uploadFile" accept="image/*,application/pdf,video/*" required>
+              </div>
+              <div class="upload-inputs">
+                <div class="input-row">
+                  <label for="uploadName">자산명</label>
+                  <input type="text" id="uploadName" placeholder="자산명" required>
+                </div>
+                <div class="input-row">
+                  <label for="uploadDesc">설명</label>
+                  <textarea id="uploadDesc" placeholder="설명"></textarea>
+                </div>
+                <div class="input-row">
+                  <label for="uploadTags">태그</label>
+                  <input type="text" id="uploadTags" placeholder="태그(쉼표로 구분)">
+                </div>
+                <div class="input-row">
+                  <label for="uploadFolder">폴더</label>
+                  <select id="uploadFolder">
+                    <option value="">폴더 선택(선택)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="upload-btn">자산 업로드</button>
+          </div>
+          <div class="msg" id="uploadMsg"></div>
+        </form>
+      </section>
+    </div>
+  </div>
+  <script>
+    // API Base URL 고정
+    const API_BASE = "http://localhost:8000/api/v1";
+
+    // 전역 상태
+    let accessToken = localStorage.getItem('access_token') || '';
+    let userName = localStorage.getItem('user_name') || '';
+    let folders = []; // [{id, name, parent_id}]
+    let selectedFolderId = null;
+
+    // 탭 전환 (로그인/회원가입)
+    document.querySelectorAll('.auth-tab').forEach(tab => {
+      tab.onclick = function() {
+        document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+        document.getElementById('loginForm').style.display = this.dataset.tab === 'login' ? 'block' : 'none';
+        document.getElementById('registerForm').style.display = this.dataset.tab === 'register' ? 'block' : 'none';
+      }
+    });
+
+    // 로그인
+    document.getElementById('loginForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const email = loginEmail.value;
+      const password = loginPassword.value;
+      loginMsg.textContent = '';
+      try {
+        const res = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({email, password})
+        });
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        accessToken = data.access_token;
+        localStorage.setItem('access_token', accessToken);
+        // 사용자 이름 가져오기 위해 임시로 이메일 저장
+        userName = email;
+        localStorage.setItem('user_name', userName);
+        showDashboard();
+      } catch {
+        loginMsg.textContent = '로그인 실패. 이메일/비밀번호 확인';
+      }
+    };
+
+    // 회원가입
+    document.getElementById('registerForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const name = registerName.value;
+      const email = registerEmail.value;
+      const password = registerPassword.value;
+      registerMsg.textContent = '';
+      try {
+        const res = await fetch(`${API_BASE}/auth/register`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({name, email, password})
+        });
+        if (!res.ok) throw new Error();
+        registerMsg.textContent = '회원가입 성공! 로그인 해주세요.';
+        registerMsg.classList.add('success');
+      } catch {
+        registerMsg.textContent = '회원가입 실패. 이메일 중복 등 확인';
+        registerMsg.classList.remove('success');
+      }
+    };
+
+    // 로그아웃
+    logoutBtn.onclick = function() {
+      localStorage.clear();
+      accessToken = '';
+      userName = '';
+      document.getElementById('dashboardSection').style.display = 'none';
+      document.getElementById('authSection').style.display = 'block';
+    };
+
+    // 대시보드 진입
+    function showDashboard() {
+      document.getElementById('authSection').style.display = 'none';
+      document.getElementById('dashboardSection').style.display = 'block';
+      userInfo.textContent = userName ? `${userName}` : '';
+      loadFolders().then(() => {
+        renderFolderList();
+        renderFolderSelects();
+        loadAssets();
+      });
+    }
+
+    // 폴더 목록 불러오기 (폴더 생성 API만 있으므로, 자산에서 폴더ID 추출)
+    async function loadFolders() {
+      try {
+        const res = await fetch(`${API_BASE}/assets`, {
+          headers: {Authorization: 'Bearer ' + accessToken}
+        });
+        if (!res.ok) throw new Error();
+        const assets = await res.json();
+        let folderIds = [...new Set(assets.map(a => a.folder_id).filter(Boolean))];
+        folders = folderIds.map(fid => ({id: fid, name: `폴더 ${fid}`}));
+        // 폴더 생성 API로 만든 폴더도 추가
+        const createdFolders = JSON.parse(localStorage.getItem('createdFolders') || '[]');
+        createdFolders.forEach(f => {
+          if (!folders.find(fd => fd.id == f.id)) folders.push(f);
+        });
+      } catch {
+        folders = [];
+      }
+    }
+
+    // 폴더 트리 렌더
+    function renderFolderList() {
+      folderList.innerHTML = `<li ${selectedFolderId===null?'class="selected"':''} data-id="">전체</li>`;
+      folders.forEach(f => {
+        folderList.innerHTML += `<li ${selectedFolderId==f.id?'class="selected"':''} data-id="${f.id}">${f.name}</li>`;
+      });
+      folderList.querySelectorAll('li').forEach(li => {
+        li.onclick = function() {
+          selectedFolderId = this.dataset.id ? Number(this.dataset.id) : null;
+          renderFolderList();
+          renderFolderSelects();
+          loadAssets();
+        }
+      });
+    }
+
+    // 폴더 선택 셀렉트박스 렌더 (업로드, 필터)
+    function renderFolderSelects() {
+      uploadFolder.innerHTML = `<option value="">폴더 선택(선택)</option>`;
+      folders.forEach(f => {
+        uploadFolder.innerHTML += `<option value="${f.id}">${f.name}</option>`;
+      });
+      filterFolder.innerHTML = `<option value="">전체 폴더</option>`;
+      folders.forEach(f => {
+        filterFolder.innerHTML += `<option value="${f.id}">${f.name}</option>`;
+      });
+      if (selectedFolderId) filterFolder.value = selectedFolderId;
+    }
+
+    // 폴더 생성
+    folderCreateForm.onsubmit = async function(e) {
+      e.preventDefault();
+      const name = folderName.value.trim();
+      if (!name) return;
+      folderMsg.textContent = '';
+      try {
+        const res = await fetch(`${API_BASE}/folders`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + accessToken
+          },
+          body: JSON.stringify({name})
+        });
+        if (!res.ok) throw new Error();
+        const folder = await res.json();
+        let createdFolders = JSON.parse(localStorage.getItem('createdFolders') || '[]');
+        createdFolders.push({id: folder.id, name: folder.name});
+        localStorage.setItem('createdFolders', JSON.stringify(createdFolders));
+        folderMsg.textContent = '폴더 생성 성공!';
+        folderMsg.classList.add('success');
+        folderName.value = '';
+        await loadFolders();
+        renderFolderList();
+        renderFolderSelects();
+      } catch {
+        folderMsg.textContent = '폴더 생성 실패';
+        folderMsg.classList.remove('success');
+      }
+    };
+
+    // 자산 목록 불러오기
+    async function loadAssets() {
+      let url = `${API_BASE}/assets`;
+      let params = [];
+      const tag = filterTag.value.trim();
+      const folderId = filterFolder.value;
+      if (tag) params.push('tag=' + encodeURIComponent(tag));
+      if (folderId) params.push('folder_id=' + encodeURIComponent(folderId));
+      if (params.length) url += '?' + params.join('&');
+      assetList.innerHTML = '불러오는 중...';
+      try {
+        const res = await fetch(url, {
+          headers: {Authorization: 'Bearer ' + accessToken}
+        });
+        if (!res.ok) throw new Error();
+        const assets = await res.json();
+        if (!assets.length) {
+          assetList.innerHTML = '<div>자산이 없습니다.</div>';
+          return;
+        }
+        assetList.innerHTML = '';
+        assets.forEach(asset => {
+          assetList.innerHTML += `
+            <div class="asset-item">
+              <b>${asset.name}</b> <span style="color:#636e72;">(${asset.mime_type}, ${Math.round(asset.size/1024)}KB)</span>
+              <div>${asset.description || ''}</div>
+              <a href="${asset.file_url}" target="_blank">다운로드</a>
+              <div class="tags">${(asset.tags||[]).map(t=>`<span class="tag">${t.name}</span>`).join(' ')}</div>
+              <span style="font-size:12px;color:#b2bec3;">${asset.created_at}</span>
+            </div>
+          `;
+        });
+      } catch {
+        assetList.innerHTML = '<div>자산 목록을 불러오지 못했습니다.</div>';
+      }
+    }
+
+    // 자산 검색
+    assetFilterForm.onsubmit = function(e) {
+      e.preventDefault();
+      loadAssets();
+    };
+
+    // 자산 업로드
+    assetUploadForm.onsubmit = async function(e) {
+      e.preventDefault();
+      uploadMsg.textContent = '';
+      const file = uploadFile.files[0];
+      const name = uploadName.value.trim();
+      const description = uploadDesc.value.trim();
+      const tags = uploadTags.value.split(',').map(t=>t.trim()).filter(t=>t);
+      const folderId = uploadFolder.value;
+      if (!file || !name) {
+        uploadMsg.textContent = '파일과 이름을 입력하세요.';
+        return;
+      }
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('name', name);
+      formData.append('description', description);
+      tags.forEach(t => formData.append('tags[]', t));
+      if (folderId) formData.append('folder_id', folderId);
+      try {
+        const res = await fetch(`${API_BASE}/assets`, {
+          method: 'POST',
+          headers: {Authorization: 'Bearer ' + accessToken},
+          body: formData
+        });
+        if (!res.ok) throw new Error();
+        uploadMsg.textContent = '업로드 성공!';
+        uploadMsg.classList.add('success');
+        assetUploadForm.reset();
+        // 미리보기 초기화
+        const thumb = document.getElementById('uploadThumb');
+        if (thumb.querySelector('img')) thumb.querySelector('img').remove();
+        thumb.querySelector('span').style.display = '';
+        await loadAssets();
+      } catch {
+        uploadMsg.textContent = '업로드 실패';
+        uploadMsg.classList.remove('success');
+      }
+    };
+
+    // 트렌디 업로드: 파일 미리보기(이미지)
+    document.getElementById('uploadFile').addEventListener('change', function(e) {
+      const thumb = document.getElementById('uploadThumb');
+      thumb.querySelector('span').style.display = '';
+      if (thumb.querySelector('img')) thumb.querySelector('img').remove();
+      const file = this.files[0];
+      if (file && file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          const img = document.createElement('img');
+          img.src = ev.target.result;
+          thumb.appendChild(img);
+          thumb.querySelector('span').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // 자동 로그인
+    if (accessToken) showDashboard();
+  </script>
+</body>
+</html>
