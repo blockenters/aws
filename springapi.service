@@ -1,3 +1,6 @@
+1. sudo mkdir -p /etc/systemd/system
+2. sudo vi /etc/systemd/system/springapi.service
+
 [Unit]
 Description=Spring Boot API Service
 After=network.target
