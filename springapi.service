@@ -10,7 +10,7 @@ Type=simple
 User=ec2-user
 Environment="JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto"
 WorkingDirectory=/home/ec2-user/sb-music-server/target
-ExecStart=/usr/bin/java -jar app.jar -Dspring.profiles.active=prod
+ExecStart=/usr/bin/java -jar app.jar -Dspring.profiles.active=prod -Dlogging.file.name=/opt/springapi/logs/spring.log
 Restart=always
 RestartSec=10
 
