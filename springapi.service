@@ -6,7 +6,7 @@ After=network.target
 Type=simple
 User=ec2-user
 Environment="JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto"
-WorkingDirectory=/ec2-user/sb-music-server
+WorkingDirectory=/home/ec2-user/sb-music-server/target
 ExecStart=/usr/bin/java -jar app.jar -Dspring.profiles.active=prod
 Restart=always
 RestartSec=10
