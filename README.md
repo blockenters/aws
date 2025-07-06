@@ -64,17 +64,17 @@ AWS의 보안 : https://docs.google.com/presentation/d/1-QH-_Em43W5NBJPvEBmPoHp3
 
 깃허브를 이용한 CI 구축 : 첫번째 서버 이용
 
-Github Actions로 CD 구축
-
 ---
 
 ec2에 git을 이용한 프로젝트 clone / pull
 
 ec2에 java / maven 설치
 
-jar 파일 생성 및 실행
+jar 파일 생성 
 
-스크립트 생성 
+트래픽 분산 처리 방법 : https://docs.google.com/presentation/d/1qiZwQNCSpfTYWoqtVp5Vyie9RFke_swgdeCLKhKspYA/edit?usp=sharing
+
+
 
 
 
