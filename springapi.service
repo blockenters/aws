@@ -1,0 +1,15 @@
+[Unit]
+Description=Spring Boot API Service
+After=network.target
+
+[Service]
+Type=simple
+User=ec2-user
+Environment="JAVA_HOME=/usr/lib/jvm/java-17-amazon-corretto"
+WorkingDirectory=/ec2-user/sb-music-server
+ExecStart=/usr/bin/java -jar app.jar -Dspring.profiles.active=prod
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
