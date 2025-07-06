@@ -13,3 +13,21 @@ RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
+
+
+
+---
+
+서비스 관련 명령어
+
+sudo vi /etc/systemd/system/springapi.service  # 서비스 파일 생성
+# 서비스 파일 권한 설정
+sudo chmod 644 /etc/systemd/system/springapi.service
+sudo systemctl daemon-reload                   # 설정 로드
+sudo systemctl enable springapi                # 부팅 시 자동 시작 설정
+sudo systemctl start springapi    # 서비스 시작
+
+
+sudo systemctl stop springapi     # 서비스 중지
+sudo systemctl restart springapi  # 서비스 재시작
+sudo systemctl status springapi   # 상태 확인
