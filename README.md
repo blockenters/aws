@@ -78,6 +78,7 @@ CloudWatch를 이용한 로그 확인
 
 AutoScaling 자동 처리 하기 
 
+기존 ec2삭제 테스트
 
 
 
