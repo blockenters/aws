@@ -74,6 +74,8 @@ jar 파일 생성
 
 트래픽 분산 처리 방법 : https://docs.google.com/presentation/d/1qiZwQNCSpfTYWoqtVp5Vyie9RFke_swgdeCLKhKspYA/edit?usp=sharing
 
+클라우드 와치를 이용한 로그 확인 
+
 
 
 
