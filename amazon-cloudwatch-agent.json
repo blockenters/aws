@@ -1,0 +1,19 @@
+{
+    "agent": {
+        "run_as_user": "root"
+    },
+    "logs": {
+        "logs_collected": {
+            "files": {
+                "collect_list": [
+                    {
+                        "file_path": "/home/ec2-user/spring.log",
+                        "log_group_name": "/ec2/springboot/application",
+                        "log_stream_name": "{instance_id}",
+                        "timezone": "UTC"
+                    }
+                ]
+            }
+        }
+    }
+}
