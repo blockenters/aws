@@ -80,6 +80,20 @@ AutoScaling 자동 처리 하기
 
 기존 ec2삭제 테스트
 
+---
+
+파이썬 fastapi 서버 배포와 로드밸런싱 및 오토스케일링 설정하기
+
+서버의 소스코드 변경 적용하기
+
+Front-End 배포하기 : https://docs.google.com/presentation/d/1beEuBRascotBGD7WNCVxGRb08ilNC8pLJRCtwTHErHk/edit?usp=sharing
+
+Github Actions를 이용한 배포 자동화
+
+보안을 위한 환경 설정 파일 처리 방법
+
+
+
 
 
 
