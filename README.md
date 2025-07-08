@@ -90,9 +90,12 @@ AutoScaling 자동 처리 하기
 
 Front-End 배포하기 : https://docs.google.com/presentation/d/1beEuBRascotBGD7WNCVxGRb08ilNC8pLJRCtwTHErHk/edit?usp=sharing
 
-Github Actions를 이용한 배포 자동화
+---
+
+Github Actions를 이용한 배포 자동화 : https://docs.google.com/presentation/d/11PgxPF4SZFGhr823NAoYGGtZcJM44macch9xrbIxc4U/edit?usp=sharing
 
 보안을 위한 환경 설정 파일 처리 방법
+
 
 
 
