@@ -82,6 +82,8 @@ AutoScaling 자동 처리 하기
 
 ---
 
+미니콘다 다운로드 페이지 : https://www.anaconda.com/download/success
+
 파이썬 fastapi 서버 배포와 로드밸런싱 및 오토스케일링 설정하기
 
 서버의 소스코드 변경 적용하기
