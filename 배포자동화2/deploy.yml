@@ -1,0 +1,62 @@
+name: Deploy to Amazon Linux EC2
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        port: 22
+        script: |
+          # git 설치
+          sudo yum install -y git
+
+          # 클론했는지 확인해서 클론했으면, pull 안했으면 clone
+          if [ -d "fast-music-server" ]; then
+            cd fast-music-server            
+            git pull https://x-access-token:${{ secrets.HUB_TOKEN }}@github.com/blockenters/python-api-server.git
+          else
+            # 처음 배포하는 경우 저장소 클론
+            git clone https://x-access-token:${{ secrets.HUB_TOKEN }}@github.com/blockenters/python-api-server.git   fast-music-server
+          fi
+
+          
+          # 미니콘다 설치 (없으면)
+          if [ ! -d "/home/ec2-user/miniconda3" ]; then
+            wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+            bash miniconda.sh -b -p /home/ec2-user/miniconda3
+            rm miniconda.sh
+          fi
+          
+          # conda 환경 생성 및 가상환경 생성
+          source /home/ec2-user/miniconda3/etc/profile.d/conda.sh
+          
+          if conda info --envs | grep -q '^music '; then
+            echo "Conda environment 'music' already exists."
+          else
+            echo "Creating conda environment 'music' with Python 3.10..."
+            conda create -y -n music python=3.10
+          fi
+                    
+          # systemd 서비스 파일 복사
+          sudo cp fast-music-server/scripts/fast-music-server.service /etc/systemd/system/fast-music-server.service
+          # start_server.sh 에 실행권한 부여 
+          chmod +x fast-music-server/scripts/start_server.sh
+
+          sudo systemctl daemon-reload
+          sudo systemctl enable fast-music-server
+          sudo systemctl restart fast-music-server
+                    
+          echo "배포가 완료되었습니다!" 

@@ -1,0 +1,21 @@
+[Unit]
+Description=MusicAPi FastAPI Server
+After=network.target
+
+[Service]
+Type=exec
+User=ec2-user
+Group=ec2-user
+WorkingDirectory=/home/ec2-user/fast-music-server
+ExecStart=/home/ec2-user/fast-music-server/scripts/start_server.sh
+Restart=always
+RestartSec=5
+StandardOutput=file:/home/ec2-user/server.log
+StandardError=file:/home/ec2-user/server.log
+SyslogIdentifier=musicapi
+
+
+[Install]
+WantedBy=multi-user.target
+
+
