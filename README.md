@@ -94,13 +94,13 @@ Front-End 배포하기 : https://docs.google.com/presentation/d/1beEuBRascotBGD7
 
 Github Actions를 이용한 배포 자동화 : https://docs.google.com/presentation/d/11PgxPF4SZFGhr823NAoYGGtZcJM44macch9xrbIxc4U/edit?usp=sharing
 
-보안을 위한 환경 설정 파일 처리 방법
+보안을 위한 환경 설정 파일 처리 방법 : secrets
 
-첫번째 더미서버 자바 스프링 부트 서버 배포
+첫번째 더미서버 자바 스프링 부트 서버 배포 : https://github.com/blockenters/sb-music-server2
 
-두번쨰 더미서버 파이썬 fastapi 서버 배포 
+두번쨰 더미서버 파이썬 fastapi 서버 배포 : https://github.com/blockenters/python-api-server
 
-RDS를 포함한 fastapi 서버 배포
+RDS를 포함한 fastapi 서버 배포 : https://github.com/blockenters/fastapi-server
 
 ---
 
