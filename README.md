@@ -106,7 +106,7 @@ RDS를 포함한 fastapi 서버 배포 : https://github.com/blockenters/fastapi-
 
 Github Actions + Docker 를 이용한 배포 자동화 : https://docs.google.com/presentation/d/1LfobxZTzg_lcWGtyOICpTnra3VLsccoLfF_zbUSB0L0/edit?usp=sharing
 
-
+오토스케일링과 도커 배포 자동화 : https://docs.google.com/presentation/d/1-AYLtbo8SXKfBTfsSnplYhcfom_hxtTQWMwFi6771R8/edit?usp=sharing
 
 
 
