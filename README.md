@@ -96,7 +96,9 @@ Github Actions를 이용한 배포 자동화 : https://docs.google.com/presentat
 
 보안을 위한 환경 설정 파일 처리 방법
 
-AutoScaling 고려한 배포 자동화 : https://docs.google.com/presentation/d/1ohsR_ElVTkpe6sMi4Xia0enyi99TjEB3SX-Z4SGx-kE/edit?usp=sharing
+---
+
+Github Actions + Docker 를 이용한 배포 자동화 : https://docs.google.com/presentation/d/1LfobxZTzg_lcWGtyOICpTnra3VLsccoLfF_zbUSB0L0/edit?usp=sharing
 
 
 
