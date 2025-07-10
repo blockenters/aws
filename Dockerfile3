@@ -1,0 +1,28 @@
+# 파이썬 3.10 버전 이미지 사용 
+FROM python:3.10-slim
+# 작업 디렉토리 이동
+WORKDIR /app
+COPY requirements.txt .
+# 파이썬 라이브러리 설치 
+RUN pip install --no-cache-dir -r requirements.txt 
+
+ARG DB_HOST
+ARG DB_PORT
+ARG DB_NAME
+ARG DB_USER
+ARG DB_PASSWORD
+
+ENV DB_HOST=${DB_HOST}
+ENV DB_PORT=${DB_PORT}
+ENV DB_NAME=${DB_NAME}
+ENV DB_USER=${DB_USER}
+ENV DB_PASSWORD=${DB_PASSWORD}
+
+# 앱 소스코드만 카피 
+COPY ./app  ./app
+
+# 포트 오픈
+EXPOSE 8000
+
+ENTRYPOINT [ "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port","8000" ]
+
