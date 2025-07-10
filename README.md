@@ -2,6 +2,20 @@
 
 ---
 
+## 프로젝트 주제 
+
+### 현대에서 정해준 큰 주제 : AWS 기반 서비스 보안 구축 프로젝트
+
+#### 프로젝트 예시 ####
+
+1. 온라인 서비스 구축 후(VPC, 도커, ECS 등을 이용한 오토스케일링과 CI/CD 는 적용되어야 함)
+   침입 탐지 및 대응 시스템 구축 (IDS) : AWS GuardDuty로 위협 탐지 및 알람 설정, AWS Lambda와 SNS를 활용하여 이상 활동 탐지 시 즉각적인 알림 및 대응 시스템 구축
+
+2. 온라인 서비스 구축 후(VPC, 도커, ECS 등을 이용한 오토스케일링과 CI/CD 는 적용되어야 함)
+   보안 로깅 및 모니터링 환경 구축 : AWS CloudWatch, CloudTrail, Elasticsearch 등을 이용하여 통합 보안 로깅 환경 구축, SIEM(Security Information and Event Management) 시스템 
+
+---
+
 이메일 : blockenters@gmail.com
 
 강의 소개 : AWS를 왜 배우는가? 
