@@ -72,21 +72,21 @@ jobs:
           fi
           
           # ECR 로그인
-          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | sudo docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
           
           # 기존 컨테이너 완전 제거 (캐시 문제 방지)
-          docker stop music-app || true
-          docker rm music-app || true
+          sudo docker stop music-app || true
+          sudo docker rm music-app || true
           
           # 기존 이미지 완전 삭제 (캐시 문제 방지)
-          docker rmi ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest || true
-          docker image prune -f
+          sudo docker rmi ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest || true
+          sudo docker image prune -f
           
           # 새 이미지 강제 풀 (캐시 무시)
-          docker pull ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest
+          sudo docker pull ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest
           
           # 새 컨테이너 실행
-          docker run -d \
+          sudo docker run -d \
             --name music-app \
             -p 8080:8080 \
             --restart unless-stopped \
@@ -94,5 +94,5 @@ jobs:
           
           # 컨테이너 상태 확인
           sleep 5
-          docker ps | grep music-app
+          sudo docker ps | grep music-app
           echo "배포 완료!" 
