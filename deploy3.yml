@@ -1,0 +1,89 @@
+name: Deploy to AWS EC2
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+        
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+      
+    - name: Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build --build-arg DB_HOST=${{ secrets.DB_HOST }} --build-arg DB_PORT=${{ secrets.DB_PORT }} --build-arg DB_NAME=${{ secrets.DB_NAME }} --build-arg DB_USER=${{ secrets.DB_USER }} --build-arg DB_PASSWORD=${{ secrets.DB_PASSWORD }}  -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker build --build-arg DB_HOST=${{ secrets.DB_HOST }} --build-arg DB_PORT=${{ secrets.DB_PORT }} --build-arg DB_NAME=${{ secrets.DB_NAME }} --build-arg DB_USER=${{ secrets.DB_USER }} --build-arg DB_PASSWORD=${{ secrets.DB_PASSWORD }}  -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+        
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_PRIVATE_KEY }}
+        port: 22
+        script: |
+          # Docker 설치 확인 및 설치 (없을 경우)
+          if ! command -v docker &> /dev/null; then
+            sudo yum update -y
+            sudo yum install -y docker
+            sudo systemctl start docker
+            sudo systemctl enable docker
+            sudo usermod -a -G docker $USER
+          fi
+          
+          # Docker 서비스 시작 (혹시 중지되어 있을 경우)
+          sudo systemctl start docker
+          
+          # AWS CLI 설치 확인 및 설치 (없을 경우)
+          if ! command -v aws &> /dev/null; then
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+            rm -rf awscliv2.zip aws/
+          fi
+          
+          # ECR 로그인
+          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | sudo docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}
+          
+          # 기존 컨테이너 완전 제거 (캐시 문제 방지)
+          sudo docker stop music-app || true
+          sudo docker rm music-app || true
+          
+          # 기존 이미지 완전 삭제 (캐시 문제 방지)
+          sudo docker rmi ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest || true
+          sudo docker image prune -f
+          
+          # 새 이미지 강제 풀 (캐시 무시)
+          sudo docker pull ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest
+          
+          # 새 컨테이너 실행
+          sudo docker run -d \
+            --name music-app \
+            -p 8000:8000 \
+            --restart unless-stopped \
+            ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest
+          
+          # 컨테이너 상태 확인
+          sleep 5
+          sudo docker ps | grep music-app
+          echo "배포 완료!" 
