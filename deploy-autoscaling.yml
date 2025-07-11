@@ -1,0 +1,193 @@
+name: Deploy to AWS Auto Scaling 
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build JAR file
+        run: mvn clean package -DskipTests
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "🎉 새 이미지가 ECR에 푸시되었습니다: $ECR_REGISTRY/$ECR_REPOSITORY:latest"
+
+      - name: Update Launch Template User Data
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+        run: |
+          # jq 설치 (ubuntu-latest는 기본 설치됨, 만약 없으면 아래 주석 해제)
+          # sudo apt-get update && sudo apt-get install -y jq
+
+          # 기존 AMI ID 가져오기
+          AMI_ID=$(aws ec2 describe-launch-template-versions \
+            --launch-template-name music-app-template \
+            --versions '$Latest' \
+            --query 'LaunchTemplateVersions[0].LaunchTemplateData.ImageId' \
+            --output text)
+
+          # User Data 스크립트 생성
+          USER_DATA_SCRIPT='#!/bin/bash
+          set -e
+          exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
+          echo "=== User Data 스크립트 시작 $(date) ==="
+
+          yum update -y
+          yum install -y docker aws-cli
+          systemctl start docker
+          systemctl enable docker
+          usermod -a -G docker ec2-user
+          systemctl status docker --no-pager
+
+          ECR_REGISTRY="'$ECR_REGISTRY'"
+          ECR_REPOSITORY="'$ECR_REPOSITORY'"
+          AWS_REGION="'$AWS_REGION'"
+
+          for attempt in 1 2 3; do
+            if aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY; then
+              break
+            fi
+            sleep 10
+          done
+
+          for attempt in 1 2 3; do
+            if docker pull $ECR_REGISTRY/$ECR_REPOSITORY:latest; then
+              break
+            fi
+            sleep 10
+          done
+
+          docker stop music-app 2>/dev/null || true
+          docker rm music-app 2>/dev/null || true
+          docker run -d --name music-app -p 8080:8080 --restart unless-stopped $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+          sleep 15
+          docker ps
+          docker logs music-app
+
+          for attempt in 1 2 3 4 5; do
+            if curl -f http://localhost:8080/api/music > /dev/null 2>&1; then
+              echo "애플리케이션 헬스체크 성공"
+              break
+            fi
+            if [ $attempt -eq 5 ]; then
+              docker logs music-app
+              exit 1
+            fi
+            sleep 10
+          done
+
+          echo "=== User Data 스크립트 완료 $(date) ==="
+          '
+
+          # User Data를 Base64로 인코딩
+          USER_DATA_B64=$(echo "$USER_DATA_SCRIPT" | base64 -w 0)
+
+          # Launch Template 새 버전 생성
+          CREATE_RESULT=$(aws ec2 create-launch-template-version \
+            --launch-template-name music-app-template \
+            --source-version '$Latest' \
+            --launch-template-data "{
+              \"ImageId\": \"$AMI_ID\",
+              \"UserData\": \"$USER_DATA_B64\"
+            }")
+
+          # 새 버전 번호 추출
+          NEW_VERSION=$(echo "$CREATE_RESULT" | jq -r '.LaunchTemplateVersion.VersionNumber')
+
+          # 새 버전을 기본(Default)으로 지정
+          aws ec2 modify-launch-template \
+            --launch-template-name music-app-template \
+            --default-version "$NEW_VERSION"
+
+          echo "Launch Template의 기본 버전이 $NEW_VERSION (최신 ECR User Data)로 설정되었습니다"
+
+      - name: Force Auto Scaling Group refresh (롤링 업데이트)
+        run: |
+          echo "Auto Scaling Group 인스턴스 새로고침 시작..."
+          aws autoscaling start-instance-refresh \
+            --auto-scaling-group-name music-app-asg \
+            --preferences '{
+              "MinHealthyPercentage": 50,
+              "InstanceWarmup": 180,
+              "CheckpointPercentages": [50],
+              "CheckpointDelay": 60
+            }' \
+            --desired-configuration '{
+              "LaunchTemplate": {
+                "LaunchTemplateName": "music-app-template",
+                "Version": "$Latest"
+              }
+            }'
+
+      - name: Wait for deployment to complete
+        run: |
+          echo "배포 진행 상황을 모니터링합니다..."
+          START_TIME=$(date +%s)
+          while true; do
+            REFRESH_INFO=$(aws autoscaling describe-instance-refreshes \
+              --auto-scaling-group-name music-app-asg \
+              --query 'InstanceRefreshes[0].[Status,StatusReason,PercentageComplete]' \
+              --output text)
+            STATUS=$(echo $REFRESH_INFO | cut -d' ' -f1)
+            REASON=$(echo $REFRESH_INFO | cut -d' ' -f2)
+            PERCENTAGE=$(echo $REFRESH_INFO | cut -d' ' -f3)
+            CURRENT_TIME=$(date +%s)
+            ELAPSED=$((CURRENT_TIME - START_TIME))
+            echo "상태: $STATUS | 진행률: ${PERCENTAGE}% | 경과시간: ${ELAPSED}초"
+            if [ "$STATUS" = "Successful" ]; then
+              echo "배포 성공! 모든 인스턴스가 새로운 버전으로 업데이트되었습니다."
+              aws autoscaling describe-auto-scaling-groups \
+                --auto-scaling-group-names music-app-asg \
+                --query 'AutoScalingGroups[0].Instances[].[InstanceId,LifecycleState,HealthStatus]' \
+                --output table
+              break
+            elif [ "$STATUS" = "Failed" ] || [ "$STATUS" = "Cancelled" ]; then
+              echo "배포 실패: $STATUS"
+              echo "실패 원인: $REASON"
+              aws autoscaling describe-auto-scaling-groups \
+                --auto-scaling-group-names music-app-asg \
+                --query 'AutoScalingGroups[0].Instances[].[InstanceId,LifecycleState,HealthStatus]' \
+                --output table
+              exit 1
+            fi
+            if [ $ELAPSED -gt 1200 ]; then
+              echo "배포 타임아웃 (20분 초과)"
+              exit 1
+            fi
+            sleep 30
+          done
