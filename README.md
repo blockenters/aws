@@ -124,7 +124,7 @@ Github Actions + Docker 를 이용한 배포 자동화 : https://docs.google.com
 
 오토스케일링과 도커 배포 자동화 : https://docs.google.com/presentation/d/1-AYLtbo8SXKfBTfsSnplYhcfom_hxtTQWMwFi6771R8/edit?usp=sharing
 
-
+ECS + Fargate : https://docs.google.com/presentation/d/14lGUZIKxOWH8uxUrpnbBBlyRj_DqfBSaxi7h3ywt6EI/edit?usp=sharing
 
 
 
