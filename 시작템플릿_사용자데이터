@@ -1,0 +1,15 @@
+#!/bin/bash
+# 사용자 데이터 스크립트
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# ECR 로그인 및 컨테이너 실행
+aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin 705913448802.dkr.ecr.ap-northeast-2.amazonaws.com
+
+docker pull 705913448802.dkr.ecr.ap-northeast-2.amazonaws.com/music-app:latest
+
+docker run -d \
+  --name music-app \
+  -p 8080:8080 \
+  --restart unless-stopped \
+  705913448802.dkr.ecr.ap-northeast-2.amazonaws.com/music-app:latest
