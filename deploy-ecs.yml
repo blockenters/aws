@@ -1,0 +1,120 @@
+name: Deploy to ECS Fargate
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build JAR file
+        run: mvn clean package -DskipTests
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "새 이미지가 ECR에 푸시되었습니다: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Deploy to ECS Fargate
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          echo "ECS Fargate 배포 시작..."
+          
+          # 새 이미지 URI
+          NEW_IMAGE_URI="$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+          echo "새 이미지 URI: $NEW_IMAGE_URI"
+          
+          # 기존 Task Definition 가져오기
+          echo "기존 Task Definition 조회 중..."
+          aws ecs describe-task-definition \
+            --task-definition music-app-task \
+            --query 'taskDefinition' > task-def.json
+          
+          # Task Definition에서 불필요한 필드 제거 및 이미지 업데이트
+          echo "Task Definition 업데이트 중..."
+          cat task-def.json | jq "
+            del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .placementConstraints, .compatibilities, .registeredAt, .registeredBy) |
+            .containerDefinitions[0].image = \"$NEW_IMAGE_URI\"
+          " > new-task-def.json
+          
+          # JSON 구조 검증
+          echo "업데이트된 Task Definition 검증 중..."
+          if ! jq empty new-task-def.json 2>/dev/null; then
+            echo "Task Definition JSON이 유효하지 않습니다"
+            cat new-task-def.json
+            exit 1
+          fi
+          
+          # 새 Task Definition 등록
+          echo "새 Task Definition 등록 중..."
+          NEW_TASK_DEF_ARN=$(aws ecs register-task-definition \
+            --cli-input-json file://new-task-def.json \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+          
+          echo "새 Task Definition 등록 완료: $NEW_TASK_DEF_ARN"
+          
+          # ECS Service 업데이트 (롤링 배포)
+          echo "ECS Service 업데이트 시작..."
+          aws ecs update-service \
+            --cluster music-app-cluster \
+            --service music-app-service \
+            --task-definition "$NEW_TASK_DEF_ARN" \
+            --force-new-deployment \
+            --no-cli-pager
+          
+          echo "배포 완료 대기 중... (최대 10분)"
+          timeout 600 aws ecs wait services-stable \
+            --cluster music-app-cluster \
+            --services music-app-service || {
+            echo "배포 타임아웃 - 수동으로 상태를 확인해주세요"
+            exit 0
+          }
+          
+          echo "ECS Fargate 배포 완료!"
+          
+          # 서비스 상태 확인
+          echo "현재 서비스 상태:"
+          aws ecs describe-services \
+            --cluster music-app-cluster \
+            --services music-app-service \
+            --query 'services[0].[serviceName,status,runningCount,pendingCount,deployments[0].status]' \
+            --output table
+          
+          # 배포된 이미지 정보 출력
+          echo "배포된 컨테이너 이미지: $NEW_IMAGE_URI"
+          
+          # 정리
+          rm -f task-def.json new-task-def.json 
