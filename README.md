@@ -131,11 +131,15 @@ ECS + Fargate : https://docs.google.com/presentation/d/14lGUZIKxOWH8uxUrpnbBBlyR
 
 도커와 쿠버네티스 : https://docs.google.com/presentation/d/1WjZTE1A40Jldmg9-zH_C4MZ4lLpxMAAWjLgiJE0ff5I/edit?usp=sharing
 
-더미서버1번 강의
+더미서버1 적용
 
-더미서버2번으로 실습
+더미서버2 실습
 
 CloudTrail : https://docs.google.com/presentation/d/17ycT_EHcLuPknYRRuItTVhpJex1x4Zp3ztF95nsqLk8/edit?usp=sharing
+
+ecs + fargate 적용
+
+docker + K8s 실습
 
 GuardDuty : https://docs.google.com/presentation/d/1sHcSnNXPbHEb58cwsn62egKUUgKRSxl20xRGD3rUJos/edit?usp=sharing
 
