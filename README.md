@@ -127,7 +127,17 @@ Github Actions + Docker 를 이용한 배포 자동화 : https://docs.google.com
 ECS + Fargate : https://docs.google.com/presentation/d/14lGUZIKxOWH8uxUrpnbBBlyRj_DqfBSaxi7h3ywt6EI/edit?usp=sharing
 
 
+---
 
+도커와 쿠버네티스 : https://docs.google.com/presentation/d/1WjZTE1A40Jldmg9-zH_C4MZ4lLpxMAAWjLgiJE0ff5I/edit?usp=sharing
+
+더미서버1번 강의
+
+더미서버2번으로 실습
+
+CloudTrail : https://docs.google.com/presentation/d/17ycT_EHcLuPknYRRuItTVhpJex1x4Zp3ztF95nsqLk8/edit?usp=sharing
+
+GuardDuty : https://docs.google.com/presentation/d/1sHcSnNXPbHEb58cwsn62egKUUgKRSxl20xRGD3rUJos/edit?usp=sharing
 
 
 
