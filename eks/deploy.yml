@@ -4,6 +4,10 @@ on:
   push:
     branches: [ main ]
 
+env:
+  EKS_CLUSTER_NAME: music1-cluster
+  DEPLOYMENT_NAME: music1-deployment
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
