@@ -143,5 +143,8 @@ docker + K8s 실습
 
 GuardDuty : https://docs.google.com/presentation/d/1sHcSnNXPbHEb58cwsn62egKUUgKRSxl20xRGD3rUJos/edit?usp=sharing
 
+fastapi 서버 개발 방법 : https://docs.google.com/presentation/d/1tbB6MxjE-wMv-FeCwSpr0jP-k_5AFBDeYXlgXLNZThY/edit?usp=sharing
+
 참고. 이력서 작성법 : https://docs.google.com/presentation/d/1DJbSa6dWlv1jKE_SAWOKhdGPXLXS0d2i7pguxZQbr0k/edit?usp=sharing
+
 
