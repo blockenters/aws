@@ -50,7 +50,7 @@ jobs:
 
       - name: Update kubeconfig
         run: aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ env.EKS_CLUSTER_NAME }}
-  
+
       - name: Deploy to EKS
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -70,7 +70,7 @@ jobs:
           
           # 배포 상태 확인
           kubectl rollout status deployment/$DEPLOYMENT_NAME -n music1-namespace
-  
+
       - name: Verify deployment
         run: |
           kubectl get services -o wide -n music1-namespace
