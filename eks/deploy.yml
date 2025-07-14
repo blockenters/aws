@@ -1,4 +1,4 @@
-name: Deploy to ECS Fargate (Blue/Green)
+name: Deploy to EKS
 
 on:
   push:
