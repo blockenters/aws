@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: music1-deployment
+  namespace: music1-namespace
+  labels:
+    app: music1-app
+spec:
+  replicas: 3  # 고가용성을 위해 3개 복제본 실행
+  selector:
+    matchLabels:
+      app: music1-app
+  template:
+    metadata:
+      labels:
+        app: music1-app
+    spec:
+      containers:
+      - name: music1-app
+        image: YOUR_ECR_URI/music1-app:latest  # 실제 ECR URI로 변경 필요
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: SERVER_PORT
+          value: "8080"
+        - name: SPRING_PROFILES_ACTIVE
+          value: "prod"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: music1-service
+  namespace: music1-namespace
+  labels:
+    app: music1-app
+spec:
+  type: LoadBalancer
+  selector:
+    app: music1-app
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http 
