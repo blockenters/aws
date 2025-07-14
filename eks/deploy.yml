@@ -49,7 +49,19 @@ jobs:
           echo "새 이미지가 ECR에 푸시되었습니다: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"          
 
       - name: Update kubeconfig
-        run: aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ env.EKS_CLUSTER_NAME }}
+        run: |
+          echo "Current AWS region: ${{ secrets.AWS_REGION }}"
+          echo "EKS cluster name: ${{ env.EKS_CLUSTER_NAME }}"
+          
+          # EKS 클러스터 목록 확인
+          aws eks list-clusters --region ${{ secrets.AWS_REGION }}
+          
+          # kubeconfig 업데이트
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ env.EKS_CLUSTER_NAME }}
+          
+          # kubectl 연결 테스트
+          kubectl cluster-info
+          kubectl get nodes
 
       - name: Deploy to EKS
         env:
