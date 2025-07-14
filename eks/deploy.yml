@@ -48,30 +48,30 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
           echo "새 이미지가 ECR에 푸시되었습니다: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"          
 
-    - name: Update kubeconfig
-      run: aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ env.EKS_CLUSTER_NAME }}
-
-    - name: Deploy to EKS
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-        IMAGE_TAG: ${{ github.sha }}
-      run: |
-        # 네임스페이스 생성
-        kubectl apply -f k8s/namespace.yml
-        
-        # 이미지 URI 업데이트
-        sed -i "s|YOUR_ECR_URI|$ECR_REGISTRY|g" k8s/deployment.yml
-        sed -i "s|YOUR_ECR_REPOSITORY|$ECR_REPOSITORY|g" k8s/deployment.yml
-        sed -i "s|:latest|:$IMAGE_TAG|g" k8s/deployment.yml
-        
-        # 쿠버네티스 리소스 적용
-        kubectl apply -f k8s/deployment.yml
-        
-        # 배포 상태 확인
-        kubectl rollout status deployment/$DEPLOYMENT_NAME -n music1-namespace
-
-    - name: Verify deployment
-      run: |
-        kubectl get services -o wide -n music1-namespace
-        kubectl get pods -l app=music1-app -n music1-namespace 
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ env.EKS_CLUSTER_NAME }}
+  
+      - name: Deploy to EKS
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          # 네임스페이스 생성
+          kubectl apply -f k8s/namespace.yml
+          
+          # 이미지 URI 업데이트
+          sed -i "s|YOUR_ECR_URI|$ECR_REGISTRY|g" k8s/deployment.yml
+          sed -i "s|YOUR_ECR_REPOSITORY|$ECR_REPOSITORY|g" k8s/deployment.yml
+          sed -i "s|:latest|:$IMAGE_TAG|g" k8s/deployment.yml
+          
+          # 쿠버네티스 리소스 적용
+          kubectl apply -f k8s/deployment.yml
+          
+          # 배포 상태 확인
+          kubectl rollout status deployment/$DEPLOYMENT_NAME -n music1-namespace
+  
+      - name: Verify deployment
+        run: |
+          kubectl get services -o wide -n music1-namespace
+          kubectl get pods -l app=music1-app -n music1-namespace 
