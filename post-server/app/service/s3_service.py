@@ -36,7 +36,8 @@ class S3Service:
             return f"https://{self.bucket_name}.s3.{settings.aws_region}.amazonaws.com/{new_filename}"
 
         except Exception as e:
-            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            print(f"S3 Upload Error: {str(e)}")
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"S3 upload failed: {str(e)}")
 
 
 s3_service = S3Service()

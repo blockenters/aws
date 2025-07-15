@@ -23,9 +23,12 @@ def create_access_token(data):
     return jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
 
 def verify_token(token):
-    payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
+    try : 
+        payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
 
-    print("sub : " + str(payload.get("sub")))
+        print("sub : " + str(payload.get("sub")))
 
-    user_id = int(payload.get("sub"))
-    return user_id
+        user_id = int(payload.get("sub"))
+        return user_id
+    except (JWTError, ValueError):
+        return None
