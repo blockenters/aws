@@ -21,4 +21,11 @@ def create_access_token(data):
     expire = datetime.now(timezone.utc) + timedelta(minutes=settings.access_token_expire_minutes)
     to_encode.update({'exp':expire})
     return jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
-    
+
+def verify_token(token):
+    payload = jwt.decode(token, settings.secret_key, algorithms=[settings.algorithm])
+
+    print("sub : " + str(payload.get("sub")))
+
+    user_id = int(payload.get("sub"))
+    return user_id

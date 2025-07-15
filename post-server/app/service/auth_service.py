@@ -10,7 +10,28 @@ from app.core.security import create_access_token, get_password_hash, verify_pas
 
 class AuthService:
     def __init__(self, db: Session):
+        print("AuthService")
         self.db = db
+
+    def get_user_by_id(self, user_id):
+        sql = """select *
+                from users
+                where id = :user_id  ;"""
+        
+        print(type(user_id))
+
+        user_result = execute_query(sql, {"user_id" : user_id} )
+
+        if not user_result:
+            return None
+        
+        user = user_result[0]
+        return {"id" : user[0], 
+                "username" : user[1], 
+                "email" : user[2], 
+                "created_at":user[4]}
+
+        
 
     def login_user(self, user_data: UserLogin):
         # 회원가입 한 사람인지 체크 
@@ -32,7 +53,7 @@ class AuthService:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
         
         # 비번도 맞으면, jwt 토큰 발행.
-        access_token = create_access_token({'sub':user_dict['id']})
+        access_token = create_access_token({'sub': str(user_dict['id'])})
         return { "access_token": access_token, "token_type": "bearer" }
 
     def register_user(self, user_data: UserRegister):
