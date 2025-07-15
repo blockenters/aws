@@ -14,3 +14,22 @@ def get_db():
         yield db
     finally:
         db.close()
+
+def execute_query(sql, params) :
+    """SQL 쿼리 실행 : select """
+    with engine.connect() as connection:
+        if params :
+            result = connection.execute( text(sql), params )
+        else :
+            result = connection.execute( text(sql))
+        return result.fetchall()
+    
+def execute_insert(sql, params):
+    """디비에 인서트"""
+    with engine.connect() as connection :
+        with connection.begin():
+            if params :
+                result = connection.execute( text(sql) , params )
+            else :
+                result = connection.execute( text(sql) )
+            return result.lastrowid
