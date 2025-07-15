@@ -4,13 +4,36 @@ from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.db.database import execute_query, execute_insert
-from app.schemas.user import UserRegister
+from app.schemas.user import UserLogin, UserRegister
 
-from app.core.security import get_password_hash
+from app.core.security import create_access_token, get_password_hash, verify_password
 
 class AuthService:
     def __init__(self, db: Session):
         self.db = db
+
+    def login_user(self, user_data: UserLogin):
+        # 회원가입 한 사람인지 체크 
+        sql = """select *
+                from users
+                where email = :email ;"""
+        user_result = execute_query(sql, {"email" : user_data.email}  )
+
+        if not user_result :
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+        
+        user = user_result[0]
+
+        user_dict = {"id" : user[0],
+                     "username" : user[1],
+                     "email" : user[2],
+                     "password_hash": user[3]}
+        if not verify_password(user_data.password, user_dict['password_hash'] ):
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+        
+        # 비번도 맞으면, jwt 토큰 발행.
+        access_token = create_access_token({'sub':user_dict['id']})
+        return { "access_token": access_token, "token_type": "bearer" }
 
     def register_user(self, user_data: UserRegister):
         sql = """select *
