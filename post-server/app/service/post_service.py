@@ -1,12 +1,39 @@
 
 from sqlalchemy.orm import Session
 from fastapi import HTTPException, status, UploadFile
-from app.db.database import execute_insert
+from app.db.database import execute_insert, execute_query
 from app.service.s3_service import s3_service
 
 class PostService :
     def __init__(self, db:Session):
         self.db = db
+
+    def get_user_posts(self, current_user, page, size):
+
+        sql = """SELECT * 
+                FROM posts
+                where user_id = :user_id
+                order by created_at desc
+                limit :size offset :offset ;"""
+        
+        offset = ( int(page) - 1) * int(size)
+        
+        posts_result = execute_query(sql, 
+                      {"user_id":current_user['id'] , "offset":offset, "size":int(size) })
+        
+        posts = []
+        for post in posts_result:
+            posts.append( {
+                "id" : post[0], 
+                "title" : post[1],
+                "content" : post[2],
+                "image_url" : post[3],
+                "user_id" : post[4],
+                "created_at" : post[5],
+                "updated_at" : post[6]
+                } )
+
+        return posts
 
     async def create_post(self, title, content, image, current_user):
         """포스트 생성"""

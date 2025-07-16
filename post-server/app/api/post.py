@@ -6,6 +6,17 @@ from app.service.post_service import PostService
 
 router = APIRouter(prefix="/posts")
 
+@router.get("/my", status_code=status.HTTP_200_OK)
+async def get_my_posts(page = 1, 
+                       size = 10, 
+                       current_user = Depends(get_current_user),
+                       db = Depends(get_db)):
+    """내가 작성한 포스트 리스트 가져오기"""
+    post_service = PostService(db)
+    posts = post_service.get_user_posts(current_user, page, size)
+    return posts
+
+
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_post(title:str = Form(...) , 
                       content:str = Form(...), 
