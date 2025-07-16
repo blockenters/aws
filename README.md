@@ -24,6 +24,8 @@
 
 화면 기획서 : figma
 
+API 설계 및 개발 : 파이썬, boto3
+
 ---
 
 이메일 : blockenters@gmail.com
