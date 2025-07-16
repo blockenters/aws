@@ -28,6 +28,8 @@ DB 스키마 설계
 
 API 설계 및 개발 : 파이썬, boto3
 
+front-end : AI 활용해서 개발
+
 ---
 
 이메일 : blockenters@gmail.com
