@@ -132,10 +132,14 @@ Github Actions + Docker 를 이용한 배포 자동화 : https://docs.google.com
 
 ECS + Fargate : https://docs.google.com/presentation/d/14lGUZIKxOWH8uxUrpnbBBlyRj_DqfBSaxi7h3ywt6EI/edit?usp=sharing
 
+https://github.com/blockenters/ecs-fargate 
+
 
 ---
 
 도커와 쿠버네티스 : https://docs.google.com/presentation/d/1WjZTE1A40Jldmg9-zH_C4MZ4lLpxMAAWjLgiJE0ff5I/edit?usp=sharing
+
+https://github.com/blockenters/docker-k8s
 
 더미서버1 적용
 
@@ -143,13 +147,15 @@ ECS + Fargate : https://docs.google.com/presentation/d/14lGUZIKxOWH8uxUrpnbBBlyR
 
 CloudTrail : https://docs.google.com/presentation/d/17ycT_EHcLuPknYRRuItTVhpJex1x4Zp3ztF95nsqLk8/edit?usp=sharing
 
-ecs + fargate 적용
+ecs + fargate 적용 
 
-docker + K8s 실습
+docker + K8s 실습 
 
 GuardDuty : https://docs.google.com/presentation/d/1sHcSnNXPbHEb58cwsn62egKUUgKRSxl20xRGD3rUJos/edit?usp=sharing
 
 fastapi 서버 개발 방법 : https://docs.google.com/presentation/d/1tbB6MxjE-wMv-FeCwSpr0jP-k_5AFBDeYXlgXLNZThY/edit?usp=sharing
+
+https://github.com/blockenters/fastapi-post-server
 
 참고. 이력서 작성법 : https://docs.google.com/presentation/d/1DJbSa6dWlv1jKE_SAWOKhdGPXLXS0d2i7pguxZQbr0k/edit?usp=sharing
 
