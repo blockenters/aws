@@ -2,6 +2,10 @@
 
 ---
 
+AWS 보안 사고 대응 : https://prag-ai.com/blog/aws-security 
+
+---
+
 ## 프로젝트 주제 
 
 ### 현대에서 정해준 큰 주제 : AWS 기반 서비스 보안 구축 프로젝트
