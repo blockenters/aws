@@ -28,7 +28,7 @@ AWS 보안 사고 대응 : https://prag-ai.com/blog/aws-security
 
 화면 기획서 : figma
 
-DB 스키마 설계 
+DB 스키마 설계 : ERD Cloud 또는 DBDiagram.io
 
 API 설계 및 개발 : 파이썬, boto3
 
