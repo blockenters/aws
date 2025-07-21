@@ -28,6 +28,15 @@ AWS 보안 사고 대응 : https://prag-ai.com/blog/aws-security
 
 화면 기획서 : figma
 
+화면기획서 - figma 로 작성 (협업툴)
+
+화면기획서 발표 - 당연히 figma로 발표!  - 프로토타이핑!
+
+화면기획서를 발표하는 목적 - 어떤 유용한 기능을 유저에게 어떻게 보여줄지! 즉, 쓸모없는것 만들지 않기 위해
+
+
+프로젝트 기술서 : 모든 프로젝트 과정을 통합해서 합친 문서 ( figma 의 링크가 들어감 )
+
 DB 스키마 설계 : ERD Cloud 또는 DBDiagram.io
 
 API 설계 및 개발 : 파이썬, boto3
