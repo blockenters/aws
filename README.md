@@ -41,7 +41,9 @@ DB 스키마 설계 : ERD Cloud 또는 DBDiagram.io
 
 API 명세서 발표 : Postman, Swagger, Gitbook : 주요 API 위주로 설명 
 
+7월 29일 : 프로젝트기술서 발표 + 서비스 시연 
 
+8월 4일 : 동영상 피드백 
 
 ---
 
