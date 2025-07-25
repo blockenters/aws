@@ -39,7 +39,7 @@ AWS 보안 사고 대응 : https://prag-ai.com/blog/aws-security
 
 DB 스키마 설계 : ERD Cloud 또는 DBDiagram.io
 
-API 명세서 발표 : Postman, Swagger, Gitbook 
+API 명세서 발표 : Postman, Swagger, Gitbook : 주요 API 위주로 설명 
 
 front-end : AI 활용해서 개발
 
